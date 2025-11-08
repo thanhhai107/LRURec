@@ -2,6 +2,7 @@ import torch
 import numpy as np
 import argparse
 import random
+import platform
 
 from datasets import *
 from model import *
@@ -84,7 +85,8 @@ parser.add_argument('--seed', type=int, default=42)
 parser.add_argument('--train_batch_size', type=int, default=64)
 parser.add_argument('--val_batch_size', type=int, default=64)
 parser.add_argument('--test_batch_size', type=int, default=64)
-parser.add_argument('--num_workers', type=int, default=8)
+# Set num_workers to 0 on Windows to avoid multiprocessing issues
+parser.add_argument('--num_workers', type=int, default=0 if platform.system() == 'Windows' else 8)
 parser.add_argument('--sliding_window_size', type=float, default=1)
 parser.add_argument('--negative_sample_size', type=int, default=100)
 parser.add_argument('--xlong_negative_sample_size', type=int, default=10000)

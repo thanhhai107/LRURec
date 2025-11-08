@@ -1,4 +1,5 @@
 import torch
+import torch.multiprocessing as mp
 import wandb
 import argparse
 
@@ -24,5 +25,8 @@ def train(args, export_root=None):
 
 
 if __name__ == "__main__":
+    # Fix multiprocessing for Windows
+    mp.freeze_support()
+    
     set_template(args)
     train(args)

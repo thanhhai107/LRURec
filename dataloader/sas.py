@@ -7,8 +7,17 @@ import torch.utils.data as data_utils
 
 
 def worker_init_fn(worker_id):
-    random.seed(np.random.get_state()[1][0] + worker_id)                                                      
-    np.random.seed(np.random.get_state()[1][0] + worker_id)
+    # Ensure we pass a native Python int to random.seed (numpy scalar types
+    # like numpy.int64 can cause TypeError: "The only supported seed types are...")
+    try:
+        base = int(np.random.get_state()[1][0])
+    except Exception:
+        # Fallback: if for some reason get_state doesn't provide usable value,
+        # generate a random int seed from numpy
+        base = int(np.random.randint(0, 2**31 - 1))
+    seed = base + int(worker_id)
+    random.seed(seed)
+    np.random.seed(seed)
 
 
 class SASDataloader():

@@ -1,31 +1,38 @@
-# Requirements for LRURec on Windows 11
-# Core deep learning frameworks
-torch>=1.12.1
-torchvision>=0.14.1
-torchaudio>=0.13.1
+# Core ML and Deep Learning
+torch>=2.0.0
+transformers>=4.33.0
+peft>=0.5.0
+bitsandbytes>=0.41.0
+pytorch-lightning>=1.9.0
+accelerate>=0.21.0
 
-# PyTorch Lightning for training utilities
-pytorch-lightning>=2.0.0
-torchmetrics>=0.11.0
-
-# Data processing
+# Data Processing
+gdown
 numpy>=1.23.0
 pandas>=2.0.0
-scipy>=1.9.0
+scikit-learn>=1.2.0
 
-# Machine learning utilities
-scikit-learn>=1.0.2
-tqdm>=4.65.0
+# Utilities
+tqdm>=4.64.0
+yacs>=0.1.8
 
-# Logging and experiment tracking
-wandb>=0.12.0
-tensorboard>=2.12.0
+# Optional: Logging and Experiment Tracking
+wandb>=0.15.0
+tensorboard
 
-# Configuration and utilities
-pyyaml>=6.0
-python-dateutil>=2.8.2
-pathlib>=1.0.1
+# Hugging Face Hub (for downloading models)
+huggingface-hub>=0.16.0
 
-# Optional: CUDA support (if using NVIDIA GPU)
-# Install PyTorch with CUDA support using:
-# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+# Additional dependencies that might be needed
+safetensors>=0.3.0
+tokenizers>=0.13.0
+sentencepiece>=0.1.96
+packaging>=23.0
+
+# Note: The following were removed from original requirements.txt:
+# - System libraries (cuda, openssl, libgcc, etc.) - These are OS-level packages
+#   that Windows handles automatically or are included with Python/pip packages
+# - Conda-specific packages - Not needed for pip installation on Windows
+# - Package dependencies that are automatically installed (like requests, urllib3, etc.)
+# - Packages not used in the codebase (like librosa, opencv, etc.)
+

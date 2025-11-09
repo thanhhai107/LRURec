@@ -94,9 +94,12 @@ class AbstractDataset(metaclass=ABCMeta):
     def split_df(self, df, user_count):
         if self.args.split == 'leave_one_out':
             print('Splitting')
+            # Add row_id to preserve original order when timestamps are equal
+            df = df.copy()
+            df['row_id'] = range(len(df))
             user_group = df.groupby('uid')
             user2items = user_group.progress_apply(
-                lambda d: list(d.sort_values(by=['timestamp', 'sid'])['sid']))
+                lambda d: list(d.sort_values(by=['timestamp', 'row_id'])['sid']))
             train, val, test = {}, {}, {}
             for i in range(user_count):
                 user = i + 1

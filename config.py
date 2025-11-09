@@ -77,7 +77,7 @@ parser.add_argument('--min_rating', type=int, default=0)
 parser.add_argument('--min_uc', type=int, default=2)
 parser.add_argument('--min_sc', type=int, default=1)
 parser.add_argument('--split', type=str, default='leave_one_out')
-parser.add_argument('--seed', type=int, default=42)
+parser.add_argument('--seed', type=int, default=2020)
 
 ################
 # Dataloader

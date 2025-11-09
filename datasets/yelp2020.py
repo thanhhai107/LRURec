@@ -1,7 +1,7 @@
 from .base import AbstractDataset
 from .utils import *
 
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 import pickle
 import shutil
@@ -70,25 +70,14 @@ class Yelp2020Dataset(AbstractDataset):
             return
         if not dataset_path.parent.is_dir():
             dataset_path.parent.mkdir(parents=True)
-        
         self.maybe_download_raw_dataset()
         df = self.load_ratings_df()
-        
-        # Filter reviews within 2019
-        print('Filtering reviews within 2019...')
-        df = df[(df['timestamp'] >= pd.Timestamp('2019-01-01').timestamp()) & 
-                (df['timestamp'] < pd.Timestamp('2020-01-01').timestamp())]
-        print(f'Reviews within 2019: {len(df):,}')
-        print(f'  Users: {df["uid"].nunique():,}, Items: {df["sid"].nunique():,}')
-        
-        # Apply preprocessing steps
-        df = self.remove_immediate_repeats(df)
+        # Filter for year 2019 using UTC timezone to match the source data
+        df = df[(df['timestamp'] >= pd.Timestamp('2019-01-01', tz='UTC').timestamp()) & 
+                (df['timestamp'] < pd.Timestamp('2020-01-01', tz='UTC').timestamp())]
+        print(f'After filtering 2019: {len(df):,} reviews, {df["uid"].nunique():,} users, {df["sid"].nunique():,} items')
         df = self.filter_triplets(df)
-        
-        print(f'After filtering:')
-        print(f'  Interactions: {len(df):,}')
-        print(f'  Users: {df["uid"].nunique():,}, Items: {df["sid"].nunique():,}')
-        
+        print(f'After 5-core filtering: {len(df):,} reviews, {df["uid"].nunique():,} users, {df["sid"].nunique():,} items')
         df, umap, smap = self.densify_index(df)
         train, val, test = self.split_df(df, len(umap))
         
@@ -106,7 +95,8 @@ class Yelp2020Dataset(AbstractDataset):
         with open(file_path, 'r', encoding='utf-8') as f:
             for line in tqdm(f, desc='Reading reviews'):
                 review = json.loads(line)
-                timestamp = datetime.strptime(review['date'], '%Y-%m-%d %H:%M:%S').timestamp()
+                # Date in source file is UTC+0, so we need to specify timezone explicitly
+                timestamp = datetime.strptime(review['date'], '%Y-%m-%d %H:%M:%S').replace(tzinfo=timezone.utc).timestamp()
                 
                 data.append({
                     'uid': review['user_id'],
@@ -116,5 +106,9 @@ class Yelp2020Dataset(AbstractDataset):
                 })
         
         df = pd.DataFrame(data)
+
+        print('Sorting reviews by timestamp...')
+        df = df.sort_values('timestamp').reset_index(drop=True)
+        
         print(f'Total reviews loaded: {len(df):,}')
         return df

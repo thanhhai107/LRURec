@@ -72,15 +72,24 @@ class AbstractDataset(metaclass=ABCMeta):
 
     def filter_triplets(self, df):
         print('Filtering triplets')
-        if self.min_sc > 0:
-            item_sizes = df.groupby('sid').size()
-            good_items = item_sizes.index[item_sizes >= self.min_sc]
-            df = df[df['sid'].isin(good_items)]
+        # Iterative filtering to ensure k-core property
+        while True:
+            start_size = len(df)
+            
+            if self.min_sc > 0:
+                item_sizes = df.groupby('sid').size()
+                good_items = item_sizes.index[item_sizes >= self.min_sc]
+                df = df[df['sid'].isin(good_items)]
 
-        if self.min_uc > 0:
-            user_sizes = df.groupby('uid').size()
-            good_users = user_sizes.index[user_sizes >= self.min_uc]
-            df = df[df['uid'].isin(good_users)]
+            if self.min_uc > 0:
+                user_sizes = df.groupby('uid').size()
+                good_users = user_sizes.index[user_sizes >= self.min_uc]
+                df = df[df['uid'].isin(good_users)]
+            
+            # Stop when no more rows are removed
+            if len(df) == start_size:
+                break
+                
         return df
     
     def densify_index(self, df):

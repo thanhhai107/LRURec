@@ -23,8 +23,8 @@ def set_template(args):
     
     if args.dataset_code == None:
         print('******************** Dataset Selection ********************')
-        dataset_code = {'1': 'ml-1m', 'b': 'beauty', 's': 'sports', 't': 'steam', 'v': 'video', 'x': 'xlong'}
-        args.dataset_code = dataset_code[input('Input 1 for ml-1m, b for beauty, s for sports, t for steam, v for video and x for xlong: ')]
+        dataset_code = {'1': 'ml-1m', 'b': 'beauty', 's': 'sports', 't': 'steam', 'v': 'video', 'x': 'xlong', 'y': 'yelp2020'}
+        args.dataset_code = dataset_code[input('Input 1 for ml-1m, b for beauty, s for sports, t for steam, v for video, x for xlong, and y for yelp2020: ')]
     
     if args.dataset_code == 'ml-1m':
         args.bert_max_len = 200
